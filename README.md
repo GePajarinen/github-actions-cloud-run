@@ -85,4 +85,4 @@ But, when you try to open the url of your Cloud Run, it will be Forbidden. You w
 
 So, you can access your application through the url.     
 :pineapple: (TODO: How to add the flag *--allow-unauthenticated* into the yaml?)   
-
+:pineapple: (TODO: I tried to add local variables, but it was a mess! )
