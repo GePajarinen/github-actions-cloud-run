@@ -3,6 +3,16 @@ on:
         branches:
             - main
 
+# Environment variables available to all jobs and steps in this workflow
+env:
+  GKE_PROJECT: ${{ secrets.GKE_PROJECT }}
+  GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
+  GITHUB_SHA: ${{ github.sha }}
+  IMAGE: gkeapp
+  DEPLOYMENT_NAME: web-app
+  SERVICE: gke-service
+  DIRECTORY: run
+   
 name: Demos 1 - Build and Deploy
 
 jobs:
@@ -15,8 +25,8 @@ jobs:
         - name: Setup Cloud SDK
           uses: google-github-actions/setup-gcloud@v0.2.0
           with:
-            project_id: ${{ secrets.GCP_PROJECT }}
-            service_account_key: ${{ secrets.GCP_SA_KEY }}
+            project_id: $GKE_PROJECT
+            service_account_key: $GCP_SA_KEY
             export_default_credentials: true
             
         - name: Authorize Docker push
@@ -24,16 +34,16 @@ jobs:
 
         - name: Build and Push Container
           run: |-
-            #docker build -t --tag=gcr.io/${{ secrets.GCP_PROJECT }}/gkeapp:${{ github.she }} .
-            #docker push gcr.io/${{ secrets.GCP_PROJECT }}/gkeapp:${{ github.sha }}
-            gcloud builds submit run --tag=gcr.io/${{ secrets.GCP_PROJECT }}/gkeapp:${{ github.sha }}
+            #docker build -t --tag=gcr.io/$GKE_PROJECT/$IMAGE:$GITHUB_SHA .
+            #docker push gcr.io/$GKE_PROJECT/$IMAGE:$GITHUB_SHA
+            gcloud builds submit $DIRECTORY --tag=gcr.io/$GKE_PROJECT/$IMAGE:$GITHUB_SHA
             
         - name: Deploy to Cloud Run
           id: deploy
           uses: google-github-actions/deploy-cloudrun@v0.2.0
           with:
-                service: gke-service
-                image: gcr.io/${{ secrets.GCP_PROJECT }}/gkeapp:${{ github.sha }}
+                service: $SERVICE
+                image: gcr.io/$GKE_PROJECT/$IMAGE:$GITHUB_SHA
                 #env_vars: TITLE=Demo 1, SECRET=${{ secrets.SECRET_NAME }}
                 
         - name: Show Output
