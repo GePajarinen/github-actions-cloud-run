@@ -24,7 +24,7 @@ jobs:
         - name: Setup Cloud SDK
           uses: google-github-actions/setup-gcloud@v0.2.0
           with:
-            project_id: ${{ env.GCLOUD_PROJECT }}
+            project_id: ${{ secrets.GKE_PROJECT }}
             service_account_key: ${{ env.GCP_SA_KEY }}
             export_default_credentials: true
             
@@ -33,16 +33,16 @@ jobs:
 
         - name: Build and Push Container
           run: |-
-            #docker build -t --tag=gcr.io/${{ env.GCLOUD_PROJECT }}/${{ env.IMAGE }}:${{ env.GITHUB_SHA }} .
-            #docker push gcr.io/${{ env.GCLOUD_PROJECT }}/${{ env.IMAGE }}:${{ env.GITHUB_SHA }}
-            gcloud builds submit ${{ env.DIRECTORY }} --tag=gcr.io/${{ env.GCLOUD_PROJECT }}/${{ env.IMAGE }}:${{ env.GITHUB_SHA }}
+            #docker build -t --tag=gcr.io/${{ secrets.GKE_PROJECT }}/${{ env.IMAGE }}:${{ env.GITHUB_SHA }} .
+            #docker push gcr.io/${{ secrets.GKE_PROJECT }}/${{ env.IMAGE }}:${{ env.GITHUB_SHA }}
+            gcloud builds submit ${{ env.DIRECTORY }} --tag=gcr.io/${{ secrets.GKE_PROJECT }}/${{ env.IMAGE }}:${{ env.GITHUB_SHA }}
             
         - name: Deploy to Cloud Run
           id: deploy
           uses: google-github-actions/deploy-cloudrun@v0.2.0
           with:
                 service: ${{ env.SERVICE }}
-                image: gcr.io/${{ env.GCLOUD_PROJECT }}/${{ env.IMAGE }}:${{ env.GITHUB_SHA }}
+                image: gcr.io/${{ secrets.GKE_PROJECT }}/${{ env.IMAGE }}:${{ env.GITHUB_SHA }}
                 #env_vars: TITLE=Demo 1, SECRET=${{ secrets.SECRET_NAME }}
                 
         - name: Show Output
