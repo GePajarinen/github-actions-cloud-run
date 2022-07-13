@@ -25,7 +25,7 @@ jobs:
         - name: Build and Push Container
           run: |-
             docker build -t --tag=gcr.io/${{ secrets.GCP_PROJECT }}/gkeapp:${{ github.she }} .
-            docker push gcr.io/${{ secrets.GCP_PROJECT }}/gkeapp:${{ github.sha }}
+            docker push --tag=gcr.io/${{ secrets.GCP_PROJECT }}/gkeapp:${{ github.sha }}
             
         - name: Deploy to Cloud Run
           id: deploy
