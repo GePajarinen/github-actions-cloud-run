@@ -76,6 +76,13 @@ jobs:
           run: echo ${{ steps.deploy.outputs.url }}
 ```
 
-When you commit the .yaml, the process will start:
+When you commit the .yaml, the process will start.   
 
+But, when you try to open the url of your Cloud Run, it will be Forbidden. You will have to manually allow the unauthenticated invocations.   
+![image](https://user-images.githubusercontent.com/58811514/178827440-0d1d3621-a745-44ac-bda4-7bb24b45b656.png)   
+
+
+
+So, you can access your application through the url.     
+:pineapple: (TODO: How to add the flag *--allow-unauthenticated* into the yaml?)   
 
