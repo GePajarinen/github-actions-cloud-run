@@ -35,11 +35,13 @@ jobs:
                 service: gke-service
                 image: gcr.io/${{ secrets.GCP_PROJECT }}/gkeapp:${{ github.sha }}
                 #env_vars: TITLE=Demo 1, SECRET=${{ secrets.SECRET_NAME }}
-          
-        - name: Allow unauthenticated
-          run: |-
-            gcloud run deploy gke-service --allow-unauthenticated
                 
         - name: Show Output
           run: 'curl "${{ steps.deploy.outputs.url }}"'
+          
+        #- name: Allow unauthenticated
+          #run: |-
+            #gcloud run deploy gke-service --allow-unauthenticated
+                
+  
                           
