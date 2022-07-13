@@ -24,17 +24,19 @@ jobs:
 
         - name: Build and Push Container
           run: |-
-            #docker build -t --tag=gcr.io/${{ secrets.GCP_PROJECT }}/gkeapp:${{ github.she }} .
-            #docker push gcr.io/${{ secrets.GCP_PROJECT }}/gkeapp:${{ github.sha }}
-            gcloud builds submit gke --tag=gcr.io/${{ secrets.GCP_PROJECT }}/gkeapp:${{ github.sha }}
+            #docker build -t --tag=gcr.io/${{ secrets.GCP_PROJECT }}/runapp:${{ github.she }} .
+            #docker push gcr.io/${{ secrets.GCP_PROJECT }}/runapp:${{ github.sha }}
+            gcloud builds submit runapp --tag=gcr.io/${{ secrets.GCP_PROJECT }}/runapp:${{ github.sha }}
             
         - name: Deploy to Cloud Run
-          id: deploy
-          uses: google-github-actions/deploy-cloudrun@v0.2.0
-          with:
-                service: gke-service
-                image: gcr.io/${{ secrets.GCP_PROJECT }}/gkeapp:${{ github.sha }}
+          #id: deploy
+          #uses: google-github-actions/deploy-cloudrun@v0.2.0
+          #with:
+                #service: run-service
+                #image: gcr.io/${{ secrets.GCP_PROJECT }}/runapp:${{ github.sha }}
                 #env_vars: TITLE=Demo 1, SECRET=${{ secrets.SECRET_NAME }}
-                
+          run: |-
+            gcloud run deploy run-service --allow-unauthenticated
+            
         - name: Show Output
-          run: echo ${{ steps.deploy.outputs.url }}
+          run: 'curl "${{ steps.deploy.outputs.url }}"'
