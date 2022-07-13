@@ -3,15 +3,6 @@ on:
         branches:
             - main
 
-# Environment variables available to all jobs and steps in this workflow
-env:
-  GCLOUD_PROJECT: ${{ secrets.GKE_PROJECT }}
-  GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
-  GITHUB_SHA: ${{ github.sha }}
-  IMAGE: gkeapp
-  SERVICE: gke-service
-  DIRECTORY: run
-   
 name: Demos 1 - Build and Deploy
 
 jobs:
@@ -24,37 +15,26 @@ jobs:
         - name: Setup Cloud SDK
           uses: google-github-actions/setup-gcloud@v0.2.0
           with:
-            project_id: ${{ secrets.GKE_PROJECT }}
-            service_account_key: ${{ env.GCP_SA_KEY }}
+            project_id: ${{ secrets.GCP_PROJECT }}
+            service_account_key: ${{ secrets.GCP_SA_KEY }}
             export_default_credentials: true
             
-        - name: Set project
-          run: |- 
-            gcloud config set project ${{ secrets.GKE_PROJECT }}
-           
         - name: Authorize Docker push
           run: gcloud auth configure-docker
 
         - name: Build and Push Container
           run: |-
-            #docker build -t --tag=gcr.io/${{ secrets.GKE_PROJECT }}/${{ env.IMAGE }}:${{ env.GITHUB_SHA }} .
-            #docker push gcr.io/${{ secrets.GKE_PROJECT }}/${{ env.IMAGE }}:${{ env.GITHUB_SHA }}
-            gcloud builds submit ${{ env.DIRECTORY }} --tag=gcr.io/${{ secrets.GKE_PROJECT }}/${{ env.IMAGE }}:${{ env.GITHUB_SHA }}
+            #docker build -t --tag=gcr.io/${{ secrets.GCP_PROJECT }}/gkeapp:${{ github.sha }} .
+            #docker push gcr.io/${{ secrets.GCP_PROJECT }}/gkeapp:${{ github.sha }}
+            gcloud builds submit run --tag=gcr.io/${{ secrets.GCP_PROJECT }}/gkeapp:${{ github.sha }}
             
         - name: Deploy to Cloud Run
           id: deploy
           uses: google-github-actions/deploy-cloudrun@v0.2.0
           with:
-                service: ${{ env.SERVICE }}
-                image: gcr.io/${{ secrets.GKE_PROJECT }}/${{ env.IMAGE }}:${{ env.GITHUB_SHA }}
+                service: gke-service
+                image: gcr.io/${{ secrets.GCP_PROJECT }}/gkeapp:${{ github.sha }}
                 #env_vars: TITLE=Demo 1, SECRET=${{ secrets.SECRET_NAME }}
                 
         - name: Show Output
-          run: 'curl "${{ steps.deploy.outputs.url }}"'
-          
-        #- name: Allow unauthenticated
-          #run: |-
-            #gcloud run deploy ${{ env.SERVICE }} --allow-unauthenticated
-                
-  
-                          
+          run: echo ${{ steps.deploy.outputs.url }}
