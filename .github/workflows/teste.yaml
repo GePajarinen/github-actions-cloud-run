@@ -25,7 +25,7 @@ jobs:
         - name: Setup Cloud SDK
           uses: google-github-actions/setup-gcloud@v0.2.0
           with:
-            project_id: $GKE_PROJECT
+            project_id: "$GKE_PROJECT"
             service_account_key: $GCP_SA_KEY
             export_default_credentials: true
             
